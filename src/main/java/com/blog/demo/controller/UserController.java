@@ -1,7 +1,7 @@
 package com.blog.demo.controller;
 
 import com.blog.demo.model.User;
-import com.blog.demo.service.UserService;
+import com.blog.demo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
