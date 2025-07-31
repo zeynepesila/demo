@@ -10,6 +10,7 @@ public class User {
     @GeneratedValue
     private UUID userId;
 
+
     private String name;
 
     @Column(nullable = false, unique = true)

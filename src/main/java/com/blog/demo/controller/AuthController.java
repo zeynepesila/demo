@@ -6,17 +6,18 @@ import com.blog.demo.model.User;
 import com.blog.demo.repository.RoleRepository;
 import com.blog.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.Collections;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
-
 public class AuthController {
 
     @Autowired
@@ -28,21 +29,46 @@ public class AuthController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-
+    // Normal kullanıcı girişi
     @PostMapping("/login")
-    public String login(@RequestBody User loginUser) {
+    public ResponseEntity<?> login(@RequestBody User loginUser) {
         User user = userRepository.findByEmail(loginUser.getEmail());
+
         if (user != null && passwordEncoder.matches(loginUser.getPasswordHash(), user.getPasswordHash())) {
-            return "Login successful";
+            if ("ROLE_USER".equals(user.getRole().getName())) {
+                String token = "user-token-" + user.getUserId();
+
+                return ResponseEntity.ok(Collections.singletonMap("token", token));
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bu giriş sadece normal kullanıcılar içindir.");
+            }
         } else {
-            return "Invalid credentials";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Geçersiz bilgiler");
         }
     }
 
+    // Admin girişi
+    @PostMapping("/admin/login")
+    public ResponseEntity<?> adminLogin(@RequestBody User loginUser) {
+        User user = userRepository.findByEmail(loginUser.getEmail());
+
+        if (user != null && passwordEncoder.matches(loginUser.getPasswordHash(), user.getPasswordHash())) {
+            if ("ROLE_ADMIN".equals(user.getRole().getName())) {
+                String token = "admin-token-" + user.getUserId();
+                return ResponseEntity.ok(Collections.singletonMap("token", token));
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Yönetici yetkisine sahip değilsiniz.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Geçersiz bilgiler");
+        }
+    }
+
+    // Kayıt (sign up)
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()) != null) {
-            return "Email already exists";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email zaten kayıtlı");
         }
 
         User user = new User();
@@ -53,19 +79,13 @@ public class AuthController {
         user.setPasswordHash(encodedPassword);
 
         Optional<Role> optionalRole = roleRepository.findByName("ROLE_USER");
-
-        Role role;
-        if (optionalRole.isPresent()) {
-            role = optionalRole.get();
-        } else {
-            throw new RuntimeException("Role not found");
+        if (optionalRole.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Rol bulunamadı");
         }
 
-        user.setRole(role);
-
+        user.setRole(optionalRole.get());
         userRepository.save(user);
-        return "Registration successful";
+
+        return ResponseEntity.ok("Kayıt başarılı");
     }
 }
-
-
