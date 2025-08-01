@@ -1,9 +1,13 @@
 package com.blog.demo.model;
+
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
+
+@Entity
 public class Role {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -15,9 +19,6 @@ public class Role {
 
     @Column(nullable = false, unique = true)
     private String name;
-
-    // Boş constructor
-    //public Role() {}
 
     // Parametreli constructor
     public Role(String name) {
