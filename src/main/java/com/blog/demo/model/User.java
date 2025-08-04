@@ -1,17 +1,23 @@
 package com.blog.demo.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.util.UUID;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "user_id", updatable = false, nullable = false)
     private UUID userId;
 
-
+    @Column(name = "username")
     private String name;
+
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -20,8 +26,13 @@ public class User {
     private String passwordHash;
 
     @ManyToOne
-    @JoinColumn(name = "roleId")
+    @JoinColumn(name = "role_id") // Role entity'deki sütunla uyumlu
     private Role role;
+
+
+    public User() {
+    }
+
 
     public UUID getUserId() {
         return userId;
@@ -63,6 +74,3 @@ public class User {
         this.role = role;
     }
 }
-
-
-

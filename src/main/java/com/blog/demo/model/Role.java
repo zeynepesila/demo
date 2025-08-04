@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.UUID;
 
 @Entity
+@Table(name = "role")
 public class Role {
 
     @Id
@@ -20,7 +21,9 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
-    // Parametreli constructor
+
+    public Role() {}
+
     public Role(String name) {
         this.name = name;
     }

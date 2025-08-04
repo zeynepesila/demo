@@ -1,24 +1,32 @@
 package com.blog.demo.model;
 
-import com.blog.demo.model.Post;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.util.UUID;
 
 @Entity
+@Table(name = "comment")
 public class Comment {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "comment_id", updatable = false, nullable = false)
     private UUID commentId;
 
     @ManyToOne
-    @JoinColumn(name = "postId")
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String comment;
 
+    // ✅ Hibernate için boş constructor
+    public Comment() {
+    }
 
+    // Getters & Setters
     public UUID getCommentId() {
         return commentId;
     }
@@ -43,6 +51,3 @@ public class Comment {
         this.comment = comment;
     }
 }
-
-
-

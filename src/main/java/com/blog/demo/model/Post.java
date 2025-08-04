@@ -1,13 +1,18 @@
 package com.blog.demo.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.util.UUID;
 
 @Entity
+@Table(name = "post")
 public class Post {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "post_id", updatable = false, nullable = false)
     private UUID postId;
 
     private String title;
@@ -17,11 +22,14 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "authorId", nullable = false)
+    @ManyToOne(optional = false) 
+    @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
-    // Getter ve Setter'lar
+    public Post() {
+    }
+
+    // Getters and Setters
 
     public UUID getPostId() {
         return postId;
@@ -63,8 +71,3 @@ public class Post {
         this.author = author;
     }
 }
-
-
-
-
-
