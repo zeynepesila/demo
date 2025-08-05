@@ -22,8 +22,9 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @ManyToOne(optional = false) 
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+
     private User author;
 
     public Post() {
