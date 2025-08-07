@@ -20,6 +20,7 @@ public class SecurityConfig {
                 .cors(cors -> {})              // CORS'u enable etmek için boş config
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/posts/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable()) // Form login disable

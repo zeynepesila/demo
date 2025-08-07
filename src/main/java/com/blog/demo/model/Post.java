@@ -29,7 +29,6 @@ public class Post {
 
     public Post() {
     }
-
     // Getters and Setters
 
     public UUID getPostId() {
