@@ -2,6 +2,7 @@ package com.blog.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,6 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/posts/*/comments").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable()) // Form login disable
