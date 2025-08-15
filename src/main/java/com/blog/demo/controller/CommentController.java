@@ -1,7 +1,6 @@
 package com.blog.demo.controller;
 
 import com.blog.demo.model.Comment;
-import com.blog.demo.model.Post;
 import com.blog.demo.repository.CommentRepository;
 import com.blog.demo.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,27 +22,24 @@ public class CommentController {
 
     // Belirli bir postun yorumlarını getir
     @GetMapping("/{postId}/comments")
-    public List<Comment> getCommentsByPostId(@PathVariable UUID postId) {
-        return commentRepository.findByPostPostId(postId);
+    public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable UUID postId) {
+        List<Comment> comments = commentRepository.findByPostPostId(postId);
+        return ResponseEntity.ok(comments);
     }
 
     // Belirli bir posta yorum ekle
     @PostMapping("/{postId}/comments")
-    public ResponseEntity<Comment> addCommentToPost(@PathVariable UUID postId, @RequestBody Comment comment) {
+    public ResponseEntity<?> addCommentToPost(@PathVariable UUID postId, @RequestBody Comment newComment) {
         return postRepository.findById(postId)
                 .map(post -> {
-                    comment.setPost(post);
-                    if (comment.getCommentId() == null) {
-                        comment.setCommentId(UUID.randomUUID());
-                    }
-                    commentRepository.save(comment);
-                    return ResponseEntity.ok(comment);
+                    newComment.setPost(post);
+                    commentRepository.save(newComment);
+                    return ResponseEntity.ok(newComment);
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build()); // ResourceNotFoundException yoksa böyle
     }
-
-
-
-
 }
+
+
+
 

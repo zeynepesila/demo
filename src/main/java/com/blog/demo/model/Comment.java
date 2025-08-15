@@ -14,7 +14,8 @@ public class Comment {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "comment_id", updatable = false, nullable = false)
     private UUID commentId;
-
+    @Version
+    private Long version;
     @Column(nullable = false)
     private String content;
 
